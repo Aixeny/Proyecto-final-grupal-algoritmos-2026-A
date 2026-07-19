@@ -427,3 +427,27 @@ class BST:
             self.inorden_auxiliar(nodo.izquierdo)
             print(nodo.dato, end=" ")
             self.inorden_auxiliar(nodo.derecho)
+    def eliminar(self, dato):
+        self.raiz = self.eliminar_auxiliar(self.raiz, dato)
+    def eliminar_auxiliar(self, nodo, dato):
+        if nodo is None:
+            return None
+        if dato<nodo.dato:
+            nodo.izquierdo = self.eliminar_auxiliar(nodo.izquierdo, dato)
+        elif dato>nodo.dato:
+            nodo.derecho=self.eliminar_auxiliar(nodo.derecho, dato)
+        else:
+            if nodo.izquierdo is None and nodo.derecho is None:
+                return None
+            if nodo.izquierdo is None:
+                return nodo.derecho
+            if nodo.derecho is None:
+                return nodo.izquierdo
+            sucesor = self.encontrar_minimo(nodo.derecho)
+            nodo.dato = sucesor.dato
+            nodo.derecho = self.eliminar_auxiliar(nodo.dereho, sucesor.dato)
+        return nodo
+    def encontrar_minimo(self, nodo):
+        while nodo.izquierdo is not None:
+            nodo = nodo.izquierdo
+        return nodo
