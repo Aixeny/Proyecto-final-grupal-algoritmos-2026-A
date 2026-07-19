@@ -384,3 +384,46 @@ class cola:
                 lista_espera.append(str(actual.dato))
                 actual = actual.siguiente
             print(f"Elementos en espera: {lista_espera}")
+class nodoBST:
+    def __init__(self, dato):
+        self.dato = dato
+        self.izquierda = None
+        self.derecha = None
+class BST:
+    def __init__(self):
+        self.raiz = None
+    def insertar(self, dato):
+        if self.raiz in None:
+            self.raiz = nodoBST(dato)
+        else:
+            self._insertar_auxiliar(self.raiz, dato)
+    def _insertar_auxiliar(self, nodo, dato):
+        if dato<nodo.dato:
+            if nodo.iquierdo is None:
+                nodo.izquierdo = nodoBST(dato)
+            else:
+                self._insertar_auxiliar(nodo.izquierdo, dato)
+        else:
+            if nodo.derecha is None:
+                nodo.derecha = nodoBST(dato)
+            else:
+                self._insertar_auxiliar(nodo.derecho, dato)
+    def buscar(self, dato):
+        return self._buscar_auxiliar(self.raiz, dato)
+    def _buscar_auxiliar(self, nodo, dato):
+        if nodo is None:
+            return False
+        if nodo.dato == dato:
+            return True
+        if dato<nodo.dato:
+            return self._buscar_auxiliar(nodo.izquierdo, dato)
+        else:
+            return self._buscar_auxiliar(nodo.dereho, dato)
+    def inorden(self):
+        self.inorden_auxiliar(self.raiz)
+        print()
+    def inorden_auxiliar(self, nodo):
+        if nodo:
+            self.inorden_auxiliar(nodo.izquierdo)
+            print(nodo.dato, end=" ")
+            self.inorden_auxiliar(nodo.derecho)
