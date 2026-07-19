@@ -1,1 +1,65 @@
-#De momento no hay nada
+drones=[]
+misiones=[]
+zona=[]
+rutas=[]
+
+def registrar_dron():
+    codigo = input("Código del dron: ")
+    modelo = input("Modelo: ")
+    velocidad = float(input("Velocidad (km/h): "))
+    capacidad = float(input("Ingrese la capacidad del dron: "))
+    bateria = float(input("Nivel de batería (%): "))
+    estado = input("Ingrese el estado del dron Ejm: Disponible, En mision, En mantenimiento: ")
+    dron = {"codigo": codigo, "modelo": modelo, "velocidad": velocidad,"Capacidad": capacidad ,"bateria": bateria, "Estado": estado}
+    drones.append(dron)
+    print("Dron registrado correctamente.")
+
+def mostrar_drones():
+    print("\n--- LISTA DE DRONES ---")
+    for i in drones:
+        print("Código:", i["codigo"], "| Modelo:", i["modelo"], "| Velocidad:", i["velocidad"],"| Capacidad", i["Capacidad"]  , "| Batería:", i["bateria"], "| Estado:", i["Estado"])
+
+def eliminar_dron():
+    codigo = input("Código del dron a eliminar: ")
+    posicion = -1
+    for i in range(len(drones)):
+        if drones[i]["codigo"] == codigo:
+            posicion = i
+    if posicion != -1:
+        drones.pop(posicion)
+        print("Dron eliminado.")
+    else:
+        print("Dron no encontrado.")
+def registrar_misiones():
+    codigo = input("Ingrese el codigo de la mision: ")
+    zona = input("Ingrese la zona de la mision: ")
+    Tipo = input("Ingrese el tipo de emergencia: ")
+    prioridad = int(input("Ingrese el nivel de prioridad ejm: 1.- Maxima prioridad 2.- Alta prioridad 3.- Prioridad Media 3.- Prioridad Baja solo numeros: "))
+    personas = int(input("Ingrese el numero de personas afectadas: "))
+    distancia = float(input("Ingrese la distacia a la zona: "))
+    estado = input("Ingrese el estado de la mision ejmp pendiente, en curso, terminada: ")
+    mision = {"Codigo": codigo,"Zona":zona,"Tipo": Tipo, "Prioridad": prioridad, "Personas afectadas":personas, "Distancia": distancia, "Estado": estado}
+    misiones.append(mision)
+    print("Mision registradad exitosamente")
+
+def mostrar_misiones():
+    print("Lista de misiones registradas")
+    for i in misiones:
+        print("Código:", i["Codigo"], "| Zona:", i["Zona"], "| Tipo:", i["Tipo"], "| Prioridad:", i["Prioridad"], "| Personas afectadas:", i["Personas afectadas"], "| Distancia:", i["Distancia"], "| Estado:", i["Estado"])
+
+def menuchi():
+    while 1:
+        print("1 Para registrar dron")
+        print("2 Para mostrar drones")
+        opcion = int(input("Ingrese la opcion: "))
+        if opcion == 1:
+            registrar_dron()
+        elif opcion ==2:
+            mostrar_drones()
+        elif opcion ==3:
+            registrar_misiones()
+        elif opcion == 4:
+            mostrar_misiones()
+
+if __name__ == '__main__':
+    menuchi()
