@@ -15,7 +15,7 @@ def registrar_dron():
     print("Dron registrado correctamente.")
 
 def mostrar_drones():
-    print("\n--- LISTA DE DRONES ---")
+    print("Drones registrados")
     for i in drones:
         print("Código:", i["codigo"], "| Modelo:", i["modelo"], "| Velocidad:", i["velocidad"],"| Capacidad", i["Capacidad"]  , "| Batería:", i["bateria"], "| Estado:", i["Estado"])
 
@@ -43,23 +43,41 @@ def registrar_misiones():
     print("Mision registradad exitosamente")
 
 def mostrar_misiones():
-    print("Lista de misiones registradas")
+    print("Misiones registradas")
     for i in misiones:
         print("Código:", i["Codigo"], "| Zona:", i["Zona"], "| Tipo:", i["Tipo"], "| Prioridad:", i["Prioridad"], "| Personas afectadas:", i["Personas afectadas"], "| Distancia:", i["Distancia"], "| Estado:", i["Estado"])
-
+def eliminar_mision():
+    codigo = input("Código del dron a eliminar: ")
+    posicion = -1
+    for i in range(len(misiones)):
+        if misiones[i]["codigo"] == codigo:
+            posicion = i
+    if posicion != -1:
+        misiones.pop(posicion)
+        print("Dron eliminado.")
+    else:
+        print("Dron no encontrado.")
 def menuchi():
     while 1:
-        print("1 Para registrar dron")
-        print("2 Para mostrar drones")
+        print("1.- Para registrar dron")
+        print("2.- Para mostrar drones")
+        print("3.- Eliminar mision")
+        print("4.- Para registrar misiones")
+        print("5.- Mostrar misiones")
+        print("6.- Eliminar mision")
         opcion = int(input("Ingrese la opcion: "))
         if opcion == 1:
             registrar_dron()
         elif opcion ==2:
             mostrar_drones()
         elif opcion ==3:
+            eliminar_dron()
+        elif opcion ==4:
             registrar_misiones()
-        elif opcion == 4:
+        elif opcion == 5:
             mostrar_misiones()
+        elif opcion == 6:
+            eliminar_mision()
 
 if __name__ == '__main__':
     menuchi()
