@@ -1,8 +1,129 @@
+class nodo:
+    def __init__(self, dato):
+        self.dato = dato
+        self.siguiente = None
+
+class cola:
+    def __init__(self):
+        self.cabeza = None
+        self.cola = None
+
+    def guardar(self, dato):
+        nuevo = nodo(dato)
+        if not self.cola:
+            self.cabeza = nuevo
+            self.cola = nuevo
+        else:
+            self.cola.siguiente = nuevo
+            self.cola = nuevo
+
+    def sacar(self):
+        if self.cabeza is None:
+            print("No hay elementos en la lista de espera")
+            return None
+        dato = self.cabeza.dato
+        self.cabeza = self.cabeza.siguiente
+        if self.cabeza is None:
+            self.cola = None
+        print(f"Se cambio el estado de {dato} a Atendida")
+        return dato
+
+    def mostrar(self):
+        if self.cabeza is None:
+            print("No hay elementos en espera")
+        else:
+            lista_espera = []
+            actual = self.cabeza
+            while actual is not None:
+                lista_espera.append(str(actual.dato))
+                actual = actual.siguiente
+            print(f"Elementos en espera: {lista_espera}")
+
+class nodoBST:
+    def __init__(self, dato):
+        self.dato = dato
+        self.izquierda = None
+        self.derecha = None
+
+class BST:
+    def __init__(self):
+        self.raiz = None
+
+    def insertar(self, dato):
+        if self.raiz is None:
+            self.raiz = nodoBST(dato)
+        else:
+            self._insertar_aux(self.raiz, dato)
+
+    def _insertar_aux(self, nodo, dato):
+        if dato < nodo.dato:
+            if nodo.izquierda is None:
+                nodo.izquierda = nodoBST(dato)
+            else:
+                self._insertar_aux(nodo.izquierda, dato)
+        else:
+            if nodo.derecha is None:
+                nodo.derecha = nodoBST(dato)
+            else:
+                self._insertar_aux(nodo.derecha, dato)
+
+    def buscar(self, dato):
+        return self._buscar_aux(self.raiz, dato)
+
+    def _buscar_aux(self, nodo, dato):
+        if nodo is None:
+            return False
+        if nodo.dato == dato:
+            return True
+        if dato < nodo.dato:
+            return self._buscar_aux(nodo.izquierda, dato)
+        else:
+            return self._buscar_aux(nodo.derecha, dato)
+
+    def inorden(self):
+        self._inorden_aux(self.raiz)
+        print()
+
+    def _inorden_aux(self, nodo):
+        if nodo:
+            self._inorden_aux(nodo.izquierda)
+            print(nodo.dato, end=" ")
+            self._inorden_aux(nodo.derecha)
+
+    def eliminar(self, dato):
+        self.raiz = self._eliminar_aux(self.raiz, dato)
+
+    def _eliminar_aux(self, nodo, dato):
+        if nodo is None:
+            return None
+        if dato < nodo.dato:
+            nodo.izquierda = self._eliminar_aux(nodo.izquierda, dato)
+        elif dato > nodo.dato:
+            nodo.derecha = self._eliminar_aux(nodo.derecha, dato)
+        else:
+            if nodo.izquierda is None and nodo.derecha is None:
+                return None
+            if nodo.izquierda is None:
+                return nodo.derecha
+            if nodo.derecha is None:
+                return nodo.izquierda
+            sucesor = self._encontrar_minimo(nodo.derecha)
+            nodo.dato = sucesor.dato
+            nodo.derecha = self._eliminar_aux(nodo.derecha, sucesor.dato)
+        return nodo
+
+    def _encontrar_minimo(self, nodo):
+        while nodo.izquierda is not None:
+            nodo = nodo.izquierda
+        return nodo
+    
 drones = []
 misiones = []
 zona = []
 grafo_zonas = {}
 rutas = []
+cola_misiones = cola()
+bst_misiones = BST()
 
 def mostrar_codigos(lista, clave_codigo):
     codigos = []
@@ -17,15 +138,23 @@ def registrar_dron():
     capacidad = float(input("Ingrese la capacidad del dron: "))
     bateria = float(input("Nivel de batería (%): "))
     estado = input("Ingrese el estado del dron Ejm: Disponible, En mision, En mantenimiento: ")
-    dron = {"codigo": codigo, "modelo": modelo, "velocidad": velocidad, "Capacidad": capacidad, "bateria": bateria, "Estado": estado}
+    dron = {
+        "codigo": codigo,
+        "modelo": modelo,
+        "velocidad": velocidad,
+        "Capacidad": capacidad,
+        "bateria": bateria,
+        "Estado": estado
+    }
     drones.append(dron)
     print("Dron registrado correctamente.")
 
 def mostrar_drones():
     print("Drones registrados")
     for i in drones:
-        print("Código:", i["codigo"], "| Modelo:", i["modelo"], "| Velocidad:", i["velocidad"], "| Capacidad", i["Capacidad"], "| Batería:", i["bateria"], "| Estado:", i["Estado"])
-
+        print("Código:", i["codigo"], "| Modelo:", i["modelo"], "| Velocidad:", i["velocidad"],
+              "| Capacidad", i["Capacidad"], "| Batería:", i["bateria"], "| Estado:", i["Estado"])
+        
 def eliminar_dron():
     codigo = input("Código del dron a eliminar: ")
     posicion = -1
@@ -46,15 +175,25 @@ def registrar_misiones():
     personas = int(input("Ingrese el numero de personas afectadas: "))
     distancia = float(input("Ingrese la distacia a la zona: "))
     estado = input("Ingrese el estado de la mision ejmp pendiente, en curso, terminada: ")
-    mision = {"Codigo": codigo, "Zona": nombre_zona, "Tipo": Tipo, "Prioridad": prioridad, "Personas afectadas": personas, "Distancia": distancia, "Estado": estado}
+    mision = {
+        "Codigo": codigo,
+        "Zona": nombre_zona,
+        "Tipo": Tipo,
+        "Prioridad": prioridad,
+        "Personas afectadas": personas,
+        "Distancia": distancia,
+        "Estado": estado
+    }
     misiones.append(mision)
     print("Mision registradad exitosamente")
 
 def mostrar_misiones():
     print("Misiones registradas")
     for i in misiones:
-        print("Código:", i["Codigo"], "| Zona:", i["Zona"], "| Tipo:", i["Tipo"], "| Prioridad:", i["Prioridad"], "| Personas afectadas:", i["Personas afectadas"], "| Distancia:", i["Distancia"], "| Estado:", i["Estado"])
-
+        print("Código:", i["Codigo"], "| Zona:", i["Zona"], "| Tipo:", i["Tipo"],
+              "| Prioridad:", i["Prioridad"], "| Personas afectadas:", i["Personas afectadas"],
+              "| Distancia:", i["Distancia"], "| Estado:", i["Estado"])
+        
 def eliminar_mision():
     codigo = input("Código de la misión a eliminar: ")
     posicion = -1
@@ -104,8 +243,10 @@ def registrar_ruta():
     existe_origen = 0
     existe_destino = 0
     for z in zona:
-        if z == origen: existe_origen = 1
-        if z == destino: existe_destino = 1
+        if z == origen:
+            existe_origen = 1
+        if z == destino:
+            existe_destino = 1
     if existe_origen == 1 and existe_destino == 1:
         grafo_zonas[origen][destino] = distancia
         grafo_zonas[destino][origen] = distancia
@@ -264,7 +405,7 @@ def busqueda_binaria_dron():
 
 def menuchi():
     while True:
-        print("1.- Dones")
+        print("\n1.- Drones")
         print("2.- Misiones")
         print("3.- Zonas")
         print("4.- Rutas")
@@ -278,11 +419,11 @@ def menuchi():
         print("0.- Salir")
         opcion = int(input("Ingrese la opcion: "))
         if opcion == 1:
-            print("----Menu----")
+            print("\n----Menu Drones----")
             print("1.- Registrar dron")
             print("2.- Mostrar dron")
             print("3.- Eliminar dron")
-            opciond = int(input("Escoja la opcion para el dron:"))
+            opciond = int(input("Escoja la opcion para el dron: "))
             if opciond == 1:
                 registrar_dron()
             elif opciond == 2:
@@ -290,11 +431,11 @@ def menuchi():
             elif opciond == 3:
                 eliminar_dron()
         elif opcion == 2:
-            print("----Menu----")
+            print("\n----Menu Misiones----")
             print("1.- Registrar mision")
             print("2.- Mostrar mision")
             print("3.- Eliminar mision")
-            opciond = int(input("Escoja la opcion para la mision:"))
+            opciond = int(input("Escoja la opcion para la mision: "))
             if opciond == 1:
                 registrar_misiones()
             elif opciond == 2:
@@ -302,11 +443,11 @@ def menuchi():
             elif opciond == 3:
                 eliminar_mision()
         elif opcion == 3:
-            print("----Menu----")
+            print("\n----Menu Zonas----")
             print("1.- Registrar Zona")
             print("2.- Mostrar Zona")
             print("3.- Eliminar Zona")
-            opciond = int(input("Escoja la opcion para la Zona:"))
+            opciond = int(input("Escoja la opcion para la Zona: "))
             if opciond == 1:
                 registrar_zona()
             elif opciond == 2:
@@ -314,11 +455,11 @@ def menuchi():
             elif opciond == 3:
                 eliminar_zona()
         elif opcion == 4:
-            print("----Menu----")
+            print("\n----Menu Rutas----")
             print("1.- Registrar Ruta")
             print("2.- Mostrar Ruta")
             print("3.- Eliminar Ruta")
-            opciond = int(input("Escoja la opcion para la Ruta:"))
+            opciond = int(input("Escoja la opcion para la Ruta: "))
             if opciond == 1:
                 registrar_ruta()
             elif opciond == 2:
@@ -343,111 +484,6 @@ def menuchi():
             busqueda_binaria_dron()
         elif opcion == 0:
             break
-
+        
 if __name__ == '__main__':
     menuchi()
-
-
-class nodo:
-    def __init__(self, dato):
-        self.dato = dato
-        self.siguiente = None
-
-class cola:
-    def __init__(self):
-        self.cabeza = None
-        self.cola = None
-    def guardar(self, dato):
-        nuevo=nodo(dato)
-        if not self.cola:
-            self.cabeza = nuevo
-            self.cola = nuevo
-        else:
-            self.cola.siguiente = nuevo
-            self.cola = nuevo 
-    def sacar(self):
-        if self.cabeza == None:
-            print("No hay elementos en la lista de espera")
-        else:
-            dato = self.cabeza.dato
-            self.cabeza = self.cabeza.siguiente
-            if self.cabeza == None:
-                self.cola = None
-            print(f"Se cambio el estado de {dato} a Atendida")
-    def mostrar(self):
-        if self.cabeza == None:
-            print("No hay elementos en espera")
-        else:
-            lista_espera=[]
-            actual = self.cabeza
-            while actual is not None:
-                lista_espera.append(str(actual.dato))
-                actual = actual.siguiente
-            print(f"Elementos en espera: {lista_espera}")
-class nodoBST:
-    def __init__(self, dato):
-        self.dato = dato
-        self.izquierda = None
-        self.derecha = None
-class BST:
-    def __init__(self):
-        self.raiz = None
-    def insertar(self, dato):
-        if self.raiz in None:
-            self.raiz = nodoBST(dato)
-        else:
-            self._insertar_auxiliar(self.raiz, dato)
-    def _insertar_auxiliar(self, nodo, dato):
-        if dato<nodo.dato:
-            if nodo.iquierdo is None:
-                nodo.izquierdo = nodoBST(dato)
-            else:
-                self._insertar_auxiliar(nodo.izquierdo, dato)
-        else:
-            if nodo.derecha is None:
-                nodo.derecha = nodoBST(dato)
-            else:
-                self._insertar_auxiliar(nodo.derecho, dato)
-    def buscar(self, dato):
-        return self._buscar_auxiliar(self.raiz, dato)
-    def _buscar_auxiliar(self, nodo, dato):
-        if nodo is None:
-            return False
-        if nodo.dato == dato:
-            return True
-        if dato<nodo.dato:
-            return self._buscar_auxiliar(nodo.izquierdo, dato)
-        else:
-            return self._buscar_auxiliar(nodo.dereho, dato)
-    def inorden(self):
-        self.inorden_auxiliar(self.raiz)
-        print()
-    def inorden_auxiliar(self, nodo):
-        if nodo:
-            self.inorden_auxiliar(nodo.izquierdo)
-            print(nodo.dato, end=" ")
-            self.inorden_auxiliar(nodo.derecho)
-    def eliminar(self, dato):
-        self.raiz = self.eliminar_auxiliar(self.raiz, dato)
-    def eliminar_auxiliar(self, nodo, dato):
-        if nodo is None:
-            return None
-        if dato<nodo.dato:
-            nodo.izquierdo = self.eliminar_auxiliar(nodo.izquierdo, dato)
-        elif dato>nodo.dato:
-            nodo.derecho=self.eliminar_auxiliar(nodo.derecho, dato)
-        else:
-            if nodo.izquierdo is None and nodo.derecho is None:
-                return None
-            if nodo.izquierdo is None:
-                return nodo.derecho
-            if nodo.derecho is None:
-                return nodo.izquierdo
-            sucesor = self.encontrar_minimo(nodo.derecho)
-            nodo.dato = sucesor.dato
-            nodo.derecho = self.eliminar_auxiliar(nodo.dereho, sucesor.dato)
-        return nodo
-    def encontrar_minimo(self, nodo):
-        while nodo.izquierdo is not None:
-            nodo = nodo.izquierdo
-        return nodo
