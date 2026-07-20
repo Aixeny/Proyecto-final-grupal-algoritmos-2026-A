@@ -131,6 +131,18 @@ def mostrar_codigos(lista, clave_codigo):
         codigos.append(elemento[clave_codigo])
     print(codigos)
 
+def buscar_mision_por_codigo(codigo):
+    for m in misiones:
+        if m["Codigo"] == codigo:
+            return m
+    return None
+
+def buscar_dron_disponible():
+    for d in drones:
+        if d.get("Estado", "").lower() == "disponible":
+            return d
+    return None
+
 def registrar_dron():
     codigo = input("Código del dron: ")
     modelo = input("Modelo: ")
@@ -167,7 +179,7 @@ def eliminar_dron():
     else:
         print("Dron no encontrado.")
 
-def registrar_misiones():
+def registrar_mision():
     codigo = input("Ingrese el codigo de la mision: ")
     nombre_zona = input("Ingrese la zona de la mision: ")
     Tipo = input("Ingrese el tipo de emergencia: ")
@@ -403,6 +415,166 @@ def busqueda_binaria_dron():
     if encontrado == 0:
         print("Dron no encontrado.")
 
+def agregar_mision_cola():
+    codigo = input("Código de la misión a encolar: ")
+    mision = buscar_mision_por_codigo(codigo)
+    if mision is None:
+        print("Misión no existe.")
+        return
+    cola_misiones.agregar(codigo)
+    print(f"Misión {codigo} agregada a la cola de espera.")
+
+def atender_mision_cola():
+    codigo = cola_misiones.sacar()
+    if codigo is None:
+        print("No hay misiones en espera.")
+        return
+    mision = buscar_mision_por_codigo(codigo)
+    if mision:
+        mision["Estado"] = "Atendida"
+        print(f"Misión {codigo} atendida. Estado cambiado a 'Atendida'.")
+    else:
+        print(f"Advertencia: la misión {codigo} ya no existe en el sistema.")
+
+def mostrar_cola_misiones():
+    cola_misiones.mostrar()
+
+def mostrar_siguiente_mision_cola():
+    sig = cola_misiones.siguiente()
+    if sig:
+        print("Siguiente misión en cola:", sig)
+    else:
+        print("No hay misiones en espera.")
+
+def insertar_mision_bst():
+    codigo = input("Código de la misión a insertar en el BST: ")
+    mision = buscar_mision_por_codigo(codigo)
+    if mision is None:
+        print("Misión no existe.")
+        return
+    bst_misiones.insertar(codigo)
+    print(f"Código {codigo} insertado en el BST.")
+
+def buscar_mision_bst():
+    codigo = input("Código a buscar en el BST: ")
+    encontrado = bst_misiones.buscar(codigo)
+    if not encontrado:
+        print("Código no encontrado en el BST.")
+
+def mostrar_recorridos_bst():
+    print("Preorden:", end=" ")
+    bst_misiones.preorden()
+    print("Inorden:", end=" ")
+    bst_misiones.inorden()
+    print("Postorden:", end=" ")
+    bst_misiones.postorden()
+
+def bfs(origen, destino):
+    if origen not in grafo_zonas or destino not in grafo_zonas:
+        print("Una o ambas zonas no existen en el grafo.")
+        return False
+    visitados = set()
+    cola = [origen]
+    visitados.add(origen)
+    print("Visitando:", origen)
+    print("Cola actual:", cola)
+    print("Nodos visitados:", visitados)
+    while cola:
+        actual = cola.pop(0)
+        if actual == destino:
+            print("¡Camino encontrado!")
+            return True
+        for vecino in grafo_zonas[actual]:
+            if vecino not in visitados:
+                visitados.add(vecino)
+                cola.append(vecino)
+                print("Visitando:", vecino)
+                print("Cola actual:", cola)
+                print("Nodos visitados:", visitados)
+    print("No existe camino.")
+    return False
+
+def dijkstra(origen, destino):
+    if origen not in grafo_zonas or destino not in grafo_zonas:
+        print("Una o ambas zonas no existen en el grafo.")
+        return None, None
+    distancias = {zona: float('inf') for zona in grafo_zonas}
+    distancias[origen] = 0
+    previos = {zona: None for zona in grafo_zonas}
+    no_visitados = set(grafo_zonas.keys())
+    while no_visitados:
+        actual = min(no_visitados, key=lambda z: distancias[z])
+        no_visitados.remove(actual)
+        print("Nodo actual:", actual)
+        print("Distancias actuales:", distancias)
+        if actual == destino:
+            break
+        for vecino, peso in grafo_zonas[actual].items():
+            if vecino in no_visitados:
+                nueva_dist = distancias[actual] + peso
+                if nueva_dist < distancias[vecino]:
+                    distancias[vecino] = nueva_dist
+                    previos[vecino] = actual
+        print("Ruta parcial:", previos)
+    if distancias[destino] == float('inf'):
+        print("No hay ruta.")
+        return None, None
+    camino = []
+    actual = destino
+    while actual is not None:
+        camino.append(actual)
+        actual = previos[actual]
+    camino.reverse()
+    print("Ruta final:", " -> ".join(camino))
+    print("Distancia total:", distancias[destino], "km")
+    return camino, distancias[destino]
+
+def simulacion_rescate():
+    print("\n=== SIMULACIÓN DE RESCATE ===\n")
+    print("Paso 1: Registrar nueva misión")
+    registrar_mision()
+    if not misiones:
+        print("No se pudo registrar la misión.")
+        return
+    mision = misiones[-1]
+    codigo = mision["Codigo"]
+    zona_afectada = mision["Zona"]
+    print("\nPaso 2: Insertar misión en la cola FIFO")
+    cola_misiones.agregar(codigo)
+    print(f"Misión {codigo} encolada.")
+    print("\nPaso 3: Insertar código en el BST")
+    bst_misiones.insertar(codigo)
+    print(f"Código {codigo} insertado en BST.")
+    print("\nPaso 4: Ordenar misiones por prioridad (Burbuja)")
+    burbuja_prioridad()
+    print("\nPaso 5: Buscar un dron disponible")
+    dron = buscar_dron_disponible()
+    if dron is None:
+        print("No hay drones disponibles. No se puede continuar.")
+        return
+    print(f"Dron seleccionado: {dron['codigo']}")
+    print("\nPaso 6: Verificar ruta con BFS")
+    if "Base" not in grafo_zonas:
+        print("No existe una zona llamada 'Base'. Por favor, créela y agregue rutas.")
+        return
+    if not bfs("Base", zona_afectada):
+        print("No hay ruta hacia la zona afectada. Rescate cancelado.")
+        return
+    print("\nPaso 7: Calcular ruta mínima con Dijkstra")
+    camino, distancia_total = dijkstra("Base", zona_afectada)
+    if camino is None:
+        print("No se pudo calcular la ruta.")
+        return
+    print("\nPaso 8: Asignar dron a la misión")
+    dron["Estado"] = "En mision"
+    print(f"Dron {dron['codigo']} asignado. Estado actualizado a 'En mision'.")
+    print("\nPaso 9: Actualizar estado de la misión")
+    mision["Estado"] = "En curso"
+    print(f"Misión {codigo} actualizada a 'En curso'.")
+
+    print("\n=== SIMULACIÓN COMPLETADA ===")
+    print(f"Resumen: Misión {codigo} asignada al dron {dron['codigo']}. Ruta: {' -> '.join(camino)}. Distancia: {distancia_total} km.")
+
 def menuchi():
     while True:
         print("\n1.- Drones")
@@ -416,6 +588,11 @@ def menuchi():
         print("9.- Búsqueda lineal de dron")
         print("10.- Búsqueda lineal de misión")
         print("11.- Búsqueda binaria de dron por código")
+        print("12. Cola de misiones (FIFO)")
+        print("13. Árbol Binario de Búsqueda (BST) de códigos")
+        print("14. Verificar ruta (BFS)")
+        print("15. Calcular ruta mínima (Dijkstra)")
+        print("16. SIMULACIÓN COMPLETA DE RESCATE")
         print("0.- Salir")
         opcion = int(input("Ingrese la opcion: "))
         if opcion == 1:
@@ -437,7 +614,7 @@ def menuchi():
             print("3.- Eliminar mision")
             opciond = int(input("Escoja la opcion para la mision: "))
             if opciond == 1:
-                registrar_misiones()
+                registrar_mision()
             elif opciond == 2:
                 mostrar_misiones()
             elif opciond == 3:
@@ -482,8 +659,61 @@ def menuchi():
             busqueda_lineal_mision()
         elif opcion == 11:
             busqueda_binaria_dron()
+        elif opcion == "12":
+            while True:
+                print("\n--- COLA DE MISIONES (FIFO) ---")
+                print("1. Agregar misión a la cola")
+                print("2. Atender misión (sacar y cambiar estado)")
+                print("3. Mostrar cola")
+                print("4. Mostrar siguiente misión")
+                print("5. Volver")
+                sub = input("Opción: ")
+                if sub == "1":
+                    agregar_mision_cola()
+                elif sub == "2":
+                    atender_mision_cola()
+                elif sub == "3":
+                    mostrar_cola_misiones()
+                elif sub == "4":
+                    mostrar_siguiente_mision_cola()
+                elif sub == "5":
+                    break
+                else:
+                    print("Opción inválida.")
+
+        elif opcion == "13":
+            while True:
+                print("\n--- ÁRBOL BINARIO DE BÚSQUEDA (CÓDIGOS) ---")
+                print("1. Insertar código de misión")
+                print("2. Buscar código")
+                print("3. Mostrar recorridos (Preorden, Inorden, Postorden)")
+                print("4. Volver")
+                sub = input("Opción: ")
+                if sub == "1":
+                    insertar_mision_bst()
+                elif sub == "2":
+                    buscar_mision_bst()
+                elif sub == "3":
+                    mostrar_recorridos_bst()
+                elif sub == "4":
+                    break
+                else:
+                    print("Opción inválida.")
+
+        elif opcion == "14":
+            origen = input("Zona de origen (ej. Base): ")
+            destino = input("Zona de destino: ")
+            bfs(origen, destino)
+
+        elif opcion == "15":
+            origen = input("Zona de origen (ej. Base): ")
+            destino = input("Zona de destino: ")
+            dijkstra(origen, destino)
+
+        elif opcion == "16":
+            simulacion_rescate()
         elif opcion == 0:
             break
-        
+
 if __name__ == '__main__':
     menuchi()
