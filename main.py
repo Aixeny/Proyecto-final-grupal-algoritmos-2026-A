@@ -530,7 +530,7 @@ def dijkstra(origen, destino):
     return camino, distancias[destino]
 
 def simulacion_rescate():
-    print("\n=== SIMULACIÓN DE RESCATE ===\n")
+    print("---SIMULACIÓN DE RESCATE---")
     print("Paso 1: Registrar nueva misión")
     registrar_mision()
     if not misiones:
@@ -539,45 +539,45 @@ def simulacion_rescate():
     mision = misiones[-1]
     codigo = mision["Codigo"]
     zona_afectada = mision["Zona"]
-    print("\nPaso 2: Insertar misión en la cola FIFO")
+    print("Paso 2: Insertar misión en la cola FIFO")
     cola_misiones.agregar(codigo)
     print(f"Misión {codigo} encolada.")
-    print("\nPaso 3: Insertar código en el BST")
+    print("Paso 3: Insertar código en el BST")
     bst_misiones.insertar(codigo)
     print(f"Código {codigo} insertado en BST.")
-    print("\nPaso 4: Ordenar misiones por prioridad (Burbuja)")
+    print("Paso 4: Ordenar misiones por prioridad (Burbuja)")
     burbuja_prioridad()
-    print("\nPaso 5: Buscar un dron disponible")
+    print("Paso 5: Buscar un dron disponible")
     dron = buscar_dron_disponible()
     if dron is None:
         print("No hay drones disponibles. No se puede continuar.")
         return
     print(f"Dron seleccionado: {dron['codigo']}")
-    print("\nPaso 6: Verificar ruta con BFS")
+    print("Paso 6: Verificar ruta con BFS")
     if "Base" not in grafo_zonas:
         print("No existe una zona llamada 'Base'. Por favor, créela y agregue rutas.")
         return
     if not bfs("Base", zona_afectada):
         print("No hay ruta hacia la zona afectada. Rescate cancelado.")
         return
-    print("\nPaso 7: Calcular ruta mínima con Dijkstra")
+    print("Paso 7: Calcular ruta mínima con Dijkstra")
     camino, distancia_total = dijkstra("Base", zona_afectada)
     if camino is None:
         print("No se pudo calcular la ruta.")
         return
-    print("\nPaso 8: Asignar dron a la misión")
+    print("Paso 8: Asignar dron a la misión")
     dron["Estado"] = "En mision"
     print(f"Dron {dron['codigo']} asignado. Estado actualizado a 'En mision'.")
-    print("\nPaso 9: Actualizar estado de la misión")
+    print("Paso 9: Actualizar estado de la misión")
     mision["Estado"] = "En curso"
     print(f"Misión {codigo} actualizada a 'En curso'.")
 
-    print("\n=== SIMULACIÓN COMPLETADA ===")
+    print("---SIMULACIÓN COMPLETADA---")
     print(f"Resumen: Misión {codigo} asignada al dron {dron['codigo']}. Ruta: {' -> '.join(camino)}. Distancia: {distancia_total} km.")
 
 def menuchi():
     while True:
-        print("\n1.- Drones")
+        print("1.- Drones")
         print("2.- Misiones")
         print("3.- Zonas")
         print("4.- Rutas")
@@ -596,7 +596,7 @@ def menuchi():
         print("0.- Salir")
         opcion = int(input("Ingrese la opcion: "))
         if opcion == 1:
-            print("\n----Menu Drones----")
+            print("---Menu Drones---")
             print("1.- Registrar dron")
             print("2.- Mostrar dron")
             print("3.- Eliminar dron")
@@ -608,7 +608,7 @@ def menuchi():
             elif opciond == 3:
                 eliminar_dron()
         elif opcion == 2:
-            print("\n----Menu Misiones----")
+            print("---Menu Misiones---")
             print("1.- Registrar mision")
             print("2.- Mostrar mision")
             print("3.- Eliminar mision")
@@ -620,7 +620,7 @@ def menuchi():
             elif opciond == 3:
                 eliminar_mision()
         elif opcion == 3:
-            print("\n----Menu Zonas----")
+            print("---Menu Zonas---")
             print("1.- Registrar Zona")
             print("2.- Mostrar Zona")
             print("3.- Eliminar Zona")
@@ -632,7 +632,7 @@ def menuchi():
             elif opciond == 3:
                 eliminar_zona()
         elif opcion == 4:
-            print("\n----Menu Rutas----")
+            print("---Menu Rutas---")
             print("1.- Registrar Ruta")
             print("2.- Mostrar Ruta")
             print("3.- Eliminar Ruta")
@@ -661,7 +661,7 @@ def menuchi():
             busqueda_binaria_dron()
         elif opcion == "12":
             while True:
-                print("\n--- COLA DE MISIONES (FIFO) ---")
+                print("--- COLA DE MISIONES (FIFO) ---")
                 print("1. Agregar misión a la cola")
                 print("2. Atender misión (sacar y cambiar estado)")
                 print("3. Mostrar cola")
@@ -683,7 +683,7 @@ def menuchi():
 
         elif opcion == "13":
             while True:
-                print("\n--- ÁRBOL BINARIO DE BÚSQUEDA (CÓDIGOS) ---")
+                print("--- ÁRBOL BINARIO DE BÚSQUEDA (CÓDIGOS) ---")
                 print("1. Insertar código de misión")
                 print("2. Buscar código")
                 print("3. Mostrar recorridos (Preorden, Inorden, Postorden)")
