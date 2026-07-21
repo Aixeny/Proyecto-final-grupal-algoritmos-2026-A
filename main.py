@@ -90,6 +90,26 @@ class BST:
             print(nodo.dato, end=" ")
             self._inorden_aux(nodo.derecha)
 
+    def preorden(self):
+        self._preorden_aux(self.raiz)
+        print()
+
+    def _preorden_aux(self, nodo):
+        if nodo:
+            print(nodo.dato, end=" ")
+            self._preorden_aux(nodo.izquierda)
+            self._preorden_aux(nodo.derecha)
+
+    def postorden(self):
+        self._postorden_aux(self.raiz)
+        print()
+
+    def _postorden_aux(self, nodo):
+        if nodo:
+            self._postorden_aux(nodo.izquierda)
+            self._postorden_aux(nodo.derecha)
+            print(nodo.dato, end=" ")
+
     def eliminar(self, dato):
         self.raiz = self._eliminar_aux(self.raiz, dato)
 
